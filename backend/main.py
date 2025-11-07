@@ -45,8 +45,11 @@ app.include_router(api_v1_router, prefix="/api/v1")
 # ======================================
 @app.get("/")
 def root():
-    return {"status": "ok", "message": "YOLO Inference API Running"}
-
+    return api_response(
+        success=True,
+        message="YOLO Inference API Running",
+        data=None
+    )
 
 # ======================================
 # Develop 모드 실행
