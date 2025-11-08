@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from backend.services.model_loader import ModelLoader
 
 from backend.api.v1 import router as api_v1_router
 

@@ -4,8 +4,9 @@ from pathlib import Path
 
 class ModelLoader:
     """
-    YOLO 모델을 메모리에 로딩하고 warm-up을 수행하는 모듈.
-    예외 처리 강화는 다음 커밋(refactor)에서 진행한다.
+    YOLO 모델 로딩 + warm-up + 예외 처리 강화 버전.
+    예외 발생 시 모델은 None 상태로 유지하며,
+    predict 단계에서 모델 존재 여부를 확인하여 적절한 응답을 반환하게 된다.
     """
 
     _model = None
@@ -13,35 +14,45 @@ class ModelLoader:
 
     @classmethod
     def load_model(cls):
-        """모델을 메모리에 로드"""
+        """안전한 예외 처리를 포함하는 모델 로딩 메서드"""
         if cls._model is not None:
             return cls._model
 
-        cls._model = torch.hub.load(
-            "ultralytics/yolov5",
-            "custom",
-            path=str(cls._model_path),
-            source="github"
-        )
+        # 모델 파일 존재 여부 확인
+        if not cls._model_path.exists():
+            print(f"[ModelLoader] 모델 파일이 존재하지 않습니다 → {cls._model_path}")
+            cls._model = None
+            return None
 
-        # 모델 로딩 후 warm-up 실행
-        cls.warm_up()
+        try:
+            # 모델 로딩
+            cls._model = torch.hub.load(
+                "ultralytics/yolov5",
+                "custom",
+                path=str(cls._model_path),
+                source="github"
+            )
+        except Exception as e:
+            print(f"[ModelLoader] 모델 로딩 실패: {e}")
+            cls._model = None
+            return None
+
+        # warm-up 실행 (실패해도 서버는 계속 실행되도록 soft fail)
+        try:
+            cls.warm_up()
+        except Exception as e:
+            print(f"[ModelLoader] warm-up 실패: {e}")
 
         return cls._model
 
     @classmethod
     def warm_up(cls):
-        """
-        초기 추론 속도를 빠르게 하기 위해 dummy input으로 warm-up 수행.
-        """
+        """dummy 입력 기반 warm-up"""
         if cls._model is None:
-            return  # 모델이 아직 없는 경우 skip
+            return
 
-        # YOLOv5의 기본 입력 크기 기준 dummy tensor 생성
         dummy_input = torch.zeros((1, 3, 640, 640))
-
-        # Warm-up inference
-        cls._model(dummy_input)
+        cls._model(dummy_input)  # warm-up inference
 
     @classmethod
     def get_model(cls):

@@ -157,7 +157,7 @@ YOLO 모델로 전달할 수 있는 형태(ndarray)로 변환한다.
 - [feat] 전처리 모듈 이미지 처리 기능 구현
 - [feat] 비디오 입력 API 기본 구조 구현
 - [feat] 동영상 대표 프레임 추출 기능 구현
-- [refactor] 서비스 레이어와 라우터 구조 분리
+- [refactor] 서비스 레이어와 라우터 구조 분리(모델 파일 존재 여부 체크 / torch.hub.load 실패 시 서버 다운 방지 / warm-up 실패해도 서버는 실행되도록 soft fail 처리)
 
 
 4️⃣ YOLO Inference 서비스 구축 
