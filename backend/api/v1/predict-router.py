@@ -6,7 +6,6 @@ router = APIRouter()
 
 @router.post("/image")
 async def predict_image(file: UploadFile = File(...)):
-    # 파일 확장자 기본 검증
     allowed_ext = ["jpg", "jpeg", "png"]
     ext = file.filename.split(".")[-1].lower()
 
@@ -18,13 +17,24 @@ async def predict_image(file: UploadFile = File(...)):
             data=None
         )
 
-    # 서비스 레이어 호출 (아직 placeholder)
-    filename = await ImageService.handle_image_upload(file)
+    # ndarray 변환
+    try:
+        img_np = await ImageService.file_to_numpy(file)
+    except Exception as e:
+        return api_response(
+            success=False,
+            message="이미지 파일을 numpy 배열로 변환하는 중 오류 발생",
+            error=str(e),
+            data=None
+        )
 
     return api_response(
         success=True,
-        message="이미지 업로드 성공",
-        data={"filename": filename}
+        message="이미지 변환 성공",
+        data={
+            "filename": file.filename,
+            "shape": img_np.shape  # 예: (720, 1280, 3)
+        }
     )
 
 @router.post("/video")
