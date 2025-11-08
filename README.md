@@ -137,6 +137,7 @@ FastAPI는 속도, 단순함, 문서화 자동화 덕분에
 - [docs] README 초안 작성 (기획·목표·구조 정리)
 - [feat] 프로젝트 초기 폴더 구조 생성
 - [feat] FastAPI 기본 서버(main.py) 초기화
+- [feat] API 라우팅 구조(api/v1) 설계
 
 
 2️ YOLO 모델 로딩 & 추론 환경 구축 
