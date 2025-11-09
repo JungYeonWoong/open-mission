@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile, File
 from backend.utils.response import api_response
 from backend.services.image_service import ImageService
 from backend.services.preprocess_service import PreprocessService
+from backend.services.video_service import VideoService
 
 router = APIRouter()
 
@@ -45,8 +46,35 @@ async def predict_image(file: UploadFile = File(...)):
 
 @router.post("/video")
 async def predict_video(file: UploadFile = File(...)):
+    allowed_ext = ["mp4", "mov", "avi"]
+    ext = file.filename.split(".")[-1].lower()
+
+    if ext not in allowed_ext:
+        return api_response(
+            success=False,
+            message="지원하지 않는 비디오 형식입니다.",
+            error=f"Allowed: {allowed_ext}, Received: {ext}",
+            data=None
+        )
+
+    try:
+        # 비디오 파일 temp 저장
+        saved_path = await VideoService.save_video(file)
+
+    except Exception as e:
+        return api_response(
+            success=False,
+            message="비디오 파일 저장 중 오류 발생",
+            error=str(e),
+            data=None
+        )
+
     return api_response(
         success=True,
-        message="비디오 추론 API 준비 완료",
-        data={"filename": file.filename}
+        message="비디오 업로드 성공",
+        data={
+            "filename": file.filename,
+            "saved_path": saved_path
+        }
     )
+
