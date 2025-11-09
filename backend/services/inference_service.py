@@ -7,7 +7,6 @@ from backend.services.model_loader import ModelLoader
 class InferenceService:
     """
     YOLO 모델에 대한 순수 추론(Inference)만 담당하는 서비스.
-    - 후처리(bbox 계산, NMS)는 다음 단계에서 분리하여 구현한다.
     """
 
     @staticmethod
