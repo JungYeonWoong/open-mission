@@ -1,6 +1,7 @@
 from fastapi import APIRouter, UploadFile, File
 from backend.utils.response import api_response
 from backend.services.image_service import ImageService
+from backend.services.preprocess_service import PreprocessService
 
 router = APIRouter()
 
@@ -17,13 +18,17 @@ async def predict_image(file: UploadFile = File(...)):
             data=None
         )
 
-    # ndarray 변환
     try:
+        # ndarray 변환
         img_np = await ImageService.file_to_numpy(file)
+
+        # 전처리 (Letterbox + normalize + CHW)
+        preprocessed = PreprocessService.preprocess_image(img_np)
+
     except Exception as e:
         return api_response(
             success=False,
-            message="이미지 파일을 numpy 배열로 변환하는 중 오류 발생",
+            message="이미지 전처리 중 오류 발생",
             error=str(e),
             data=None
         )
@@ -33,7 +38,8 @@ async def predict_image(file: UploadFile = File(...)):
         message="이미지 변환 성공",
         data={
             "filename": file.filename,
-            "shape": img_np.shape  # 예: (720, 1280, 3)
+            "shape": img_np.shape,  # 예: (720, 1280, 3)
+            "processed_shape": preprocessed.shape
         }
     )
 
