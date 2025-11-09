@@ -1,11 +1,11 @@
-# backend/services/predict_service.py
-
-import numpy as np
+import time
 from fastapi import UploadFile
 
 from backend.services.image_service import ImageService
 from backend.services.video_service import VideoService
 from backend.services.preprocess_service import PreprocessService
+from backend.services.inference_service import InferenceService
+from backend.services.postprocess_service import PostprocessService
 
 
 class PredictService:
@@ -21,9 +21,7 @@ class PredictService:
     def validate_extension(file: UploadFile, allowed_ext: list):
         ext = file.filename.split(".")[-1].lower()
         if ext not in allowed_ext:
-            raise ValueError(
-                f"지원하지 않는 파일 형식입니다. Allowed: {allowed_ext}, Received: '{ext}'"
-            )
+            raise ValueError(f"지원하지 않는 파일 형식입니다. Allowed: {allowed_ext}, Received: '{ext}'")
 
     @staticmethod
     async def process_image(file: UploadFile):
@@ -36,10 +34,20 @@ class PredictService:
         # 3) 전처리
         processed = PreprocessService.preprocess_image(img_np)
 
+        # 추론
+        start = time.time()
+        raw_output = InferenceService.infer(processed)
+        end = time.time()
+
+        # 후처리 (BBox/Label/Confidence)
+        detections = PostprocessService.convert(raw_output)
+
         return {
             "filename": file.filename,
-            "original_shape": img_np.shape,
-            "processed_shape": processed.shape,
+            "image_size": img_np.shape,
+            "processed_size": processed.shape,
+            "inference_time_ms": round((end - start) * 1000, 2),
+            "detections": detections
         }
 
     @staticmethod
@@ -52,13 +60,22 @@ class PredictService:
 
         # 3) 대표 프레임 추출
         frame = VideoService.extract_representative_frame(saved_path)
-
+        
         # 4) 전처리
         processed = PreprocessService.preprocess_image(frame)
+
+        # 추론
+        start = time.time()
+        raw_output = InferenceService.infer(processed)
+        end = time.time()
+
+        detections = PostprocessService.convert(raw_output)
 
         return {
             "filename": file.filename,
             "saved_path": saved_path,
             "frame_shape": frame.shape,
-            "processed_shape": processed.shape,
+            "processed_size": processed.shape,
+            "inference_time_ms": round((end - start) * 1000, 2),
+            "detections": detections
         }
