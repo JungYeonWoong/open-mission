@@ -2,37 +2,43 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>YOLO Inference Web</title>
+    <title>YOLO Object Detection Web</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>🔥 YOLO Object Detection</h1>
+    <header>
+        <h1>🔥 YOLO Object Detection Web</h1>
+        <p>이미지/비디오를 업로드하여 객체 탐지를 수행합니다.</p>
+    </header>
 
-    <div class="upload-container">
-        <h2>이미지 업로드</h2>
+    <section class="upload-section">
+        <h2>📸 이미지 업로드</h2>
         <input type="file" id="imageInput" accept="image/*">
         <button onclick="uploadImage()">이미지 추론하기</button>
-    </div>
+    </section>
 
-    <div class="upload-container">
-        <h2>비디오 업로드</h2>
+    <section class="upload-section">
+        <h2>🎥 비디오 업로드</h2>
         <input type="file" id="videoInput" accept="video/*">
         <button onclick="uploadVideo()">비디오 추론하기</button>
-    </div>
+    </section>
 
-    <hr>
+    <section class="preview-section">
+        <h2>📌 이미지 미리보기</h2>
+        <div class="canvas-container">
+            <img id="previewImage" />
+            <canvas id="canvas"></canvas>
+        </div>
+    </section>
 
-    <h2>📌 추론 결과</h2>
-    <pre id="resultBox">결과가 여기에 표시됩니다...</pre>
+    <section class="result-section">
+        <h2>📊 추론 결과(JSON)</h2>
+        <pre id="resultBox">추론 결과가 여기에 표시됩니다...</pre>
+    </section>
 
-    <h2>📌 이미지 미리보기 + 박스 렌더링</h2>
-    <div class="canvas-container">
-        <img id="previewImage" />
-        <canvas id="canvas"></canvas>
-    </div>
+    <script type="module" src="script.js"></script>
+    <script type="module" src="render.js"></script>
 
-    <script src="script.js"></script>
-    <script src="render.js"></script>
 </body>
 </html>
