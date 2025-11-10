@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>YOLO Inference Web</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>🔥 YOLO Object Detection</h1>
+
+    <div class="upload-container">
+        <h2>이미지 업로드</h2>
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="uploadImage()">이미지 추론하기</button>
+    </div>
+
+    <div class="upload-container">
+        <h2>비디오 업로드</h2>
+        <input type="file" id="videoInput" accept="video/*">
+        <button onclick="uploadVideo()">비디오 추론하기</button>
+    </div>
+
+    <hr>
+
+    <h2>📌 추론 결과</h2>
+    <pre id="resultBox">결과가 여기에 표시됩니다...</pre>
+
+    <script src="script.js"></script>
+</body>
+</html>

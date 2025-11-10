@@ -175,12 +175,14 @@ YOLO 모델로 이미지/영상을 추론하고, 결과를 표준화된 JSON 포
 
 웹 페이지에서 사용자가 직접 이미지를 업로드하고,
 API 결과를 확인할 수 있는 기본 UI를 구성한다.
-- [feat] index.html UI 구성
-- [feat] 업로드 버튼 + 파일 선택 UI 구현
-- [style] 기본 스타일링(CSS) 추가
-- [feat] fetch API로 /predict/image 연동
-- [feat] fetch API로 /predict/video 연동
-- [feat] 응답 JSON 파싱 로직 작성
+
+- [feat] 기본 웹 UI 구축 및 API 연동 구현
+    - index.html에 이미지/비디오 업로드 UI 구성
+    - 업로드 버튼 및 파일 선택 기능 추가
+    - fetch API로 /predict/image, /predict/video 연동
+    - JSON 응답 결과 화면 표시
+    - 기본 스타일(CSS) 적용하여 사용자 경험 개선
+
 
 
 6️⃣ Canvas 기반 Bounding Box 시각화 
