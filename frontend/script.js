@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:8000/api/v1";  // FastAPI 서버 주소
+import { drawBoundingBoxes } from "./render.js";
+
+const BASE_URL = "http://localhost:8000/api/v1";
 
 async function uploadImage() {
     const fileInput = document.getElementById("imageInput");
@@ -7,34 +9,25 @@ async function uploadImage() {
         return;
     }
 
+    const file = fileInput.files[0];
     const formData = new FormData();
-    formData.append("file", fileInput.files[0]);
+    formData.append("file", file);
 
     const res = await fetch(`${BASE_URL}/predict/image`, {
         method: "POST",
         body: formData,
     });
 
-    const data = await res.json();
-    document.getElementById("resultBox").innerText = JSON.stringify(data, null, 2);
-}
+    const json = await res.json();
+    document.getElementById("resultBox").innerText = JSON.stringify(json, null, 2);
 
+    // 미리보기 이미지 표시
+    const preview = document.getElementById("previewImage");
+    preview.src = URL.createObjectURL(file);
 
-async function uploadVideo() {
-    const fileInput = document.getElementById("videoInput");
-    if (fileInput.files.length === 0) {
-        alert("비디오 파일을 선택하세요!");
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", fileInput.files[0]);
-
-    const res = await fetch(`${BASE_URL}/predict/video`, {
-        method: "POST",
-        body: formData,
-    });
-
-    const data = await res.json();
-    document.getElementById("resultBox").innerText = JSON.stringify(data, null, 2);
+    // 이미지가 로드된 후 canvas 박스 렌더링
+    preview.onload = () => {
+        const detections = json.data?.detections || [];
+        drawBoundingBoxes(preview, detections);
+    };
 }

@@ -32,3 +32,22 @@ button:hover {
     border-radius: 6px;
     white-space: pre-wrap;
 }
+
+
+.canvas-container {
+    position: relative;
+    width: fit-content;
+    margin-top: 20px;
+}
+
+#previewImage {
+    max-width: 600px;
+    display: block;
+}
+
+#canvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none; /* 클릭 방해 방지 */
+}
