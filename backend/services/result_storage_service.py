@@ -68,11 +68,23 @@ class ResultStorageService:
     @staticmethod
     def save_meta(meta: dict, path: Path):
         """
-        JSON 메타데이터 저장
+        추론 메타데이터(JSON) 저장 기능
+        meta: {
+            "id": "20251122_153002_123456",
+            "filename": "image.jpg",
+            "detections": [...],
+            "inference_time": 0.0451,
+            "model": "yolov5",
+            ...
+        }
         """
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(meta, f, ensure_ascii=False, indent=2)
+        try:
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(meta, f, indent=2, ensure_ascii=False)
 
+        except Exception as e:
+            raise RuntimeError(f"메타데이터 저장 실패: {str(e)}")
+        
     @staticmethod
     async def save_all(file: UploadFile, original_np: np.ndarray, result_np: np.ndarray, meta: dict):
         """
