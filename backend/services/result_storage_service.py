@@ -20,11 +20,12 @@ class ResultStorageService:
     @staticmethod
     def _generate_id():
         """
-        timestamp 기반 고유 ID 생성
-        예: 20251122_153002_123456
+        더 고유하고 정렬성이 좋은 timestamp 기반 ID 생성
+        예: 2025-11-22T15-40-25-123456_ab12f3
         """
-        now = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-        return now
+        ts = datetime.now().strftime("%Y-%m-%dT%H-%M-%S-%f")
+        rand = uuid.uuid4().hex[:6]  # 짧은 랜덤 문자열
+        return f"{ts}_{rand}"
 
     @staticmethod
     def _get_paths(result_id: str):
