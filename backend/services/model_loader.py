@@ -1,6 +1,6 @@
 import torch
 from pathlib import Path
-
+from models.common import DetectMultiBackend
 
 class ModelLoader:
     """
@@ -25,13 +25,13 @@ class ModelLoader:
             return None
 
         try:
-            # 모델 로딩
-            cls._model = torch.hub.load(
-                "ultralytics/yolov5",
-                "custom",
-                path=str(cls._model_path),
-                source="github"
+            # YOLOv5 모델 로딩
+            cls._model = DetectMultiBackend(
+                weights=str(cls._model_path),
+                device="cpu",    # GPU 사용 시 'cuda:0'
+                dnn=False
             )
+
         except Exception as e:
             print(f"[ModelLoader] 모델 로딩 실패: {e}")
             cls._model = None
