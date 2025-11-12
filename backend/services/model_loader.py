@@ -1,6 +1,20 @@
 import torch
 from pathlib import Path
-from models.common import DetectMultiBackend
+import sys
+
+# ======================================
+# YOLOv5 경로 설정 (전역에서 한 번만 설정)
+# ======================================
+FILE = Path(__file__).resolve()
+ROOT = FILE.parents[2]  # open-mission/
+YOLO_ROOT = ROOT / "yolov5"
+
+# sys.path 최우선 등록
+sys.path.insert(0, str(YOLO_ROOT))
+sys.path.insert(0, str(YOLO_ROOT / "utils"))
+
+from yolov5.models.common import DetectMultiBackend
+
 
 class ModelLoader:
     """
@@ -10,13 +24,15 @@ class ModelLoader:
     """
 
     _model = None
-    _model_path = Path("backend/models/fire_detector.pt")
+    _model_path = (ROOT / "backend" / "models" / "fire_detector.pt").resolve()
 
     @classmethod
     def load_model(cls):
         """안전한 예외 처리를 포함하는 모델 로딩 메서드"""
         if cls._model is not None:
             return cls._model
+
+        # YOLOv5 폴더 등록
 
         # 모델 파일 존재 여부 확인
         if not cls._model_path.exists():
@@ -31,6 +47,7 @@ class ModelLoader:
                 device="cpu",    # GPU 사용 시 'cuda:0'
                 dnn=False
             )
+            print("[ModelLoader] 모델 로딩 성공!")
 
         except Exception as e:
             print(f"[ModelLoader] 모델 로딩 실패: {e}")
@@ -42,6 +59,7 @@ class ModelLoader:
             cls.warm_up()
         except Exception as e:
             print(f"[ModelLoader] warm-up 실패: {e}")
+
 
         return cls._model
 

@@ -1,1 +1,24 @@
+# Python
+venv/
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+.env
+.DS_Store
+
+# Logs
+*.log
+
+# YOLOv5 stuff
+runs/
+yolov5/data/
+yolov5/weights/
+*.pt
+*.rbln
+
+# IDE
+.vscode/
+.idea/

@@ -6,9 +6,10 @@ FastAPI 서버 없이 ModelLoader만 독립적으로 검증할 수 있다.
 import sys
 from pathlib import Path
 
-# backend 폴더를 Python 경로에 추가
-root = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(root))
+ROOT = Path(__file__).resolve().parents[2]  # open-mission/
+YOLO_ROOT = ROOT / "yolov5"
+
+sys.path.insert(0, str(YOLO_ROOT))
 
 from backend.services.model_loader import ModelLoader
 
