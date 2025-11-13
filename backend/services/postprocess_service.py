@@ -1,8 +1,6 @@
-# backend/services/postprocess_service.py
-
 import torch
 import numpy as np
-
+from torchvision.ops import nms
 
 class PostprocessService:
     """
@@ -40,7 +38,7 @@ class PostprocessService:
         predictions: YOLO raw output (tensor)
         returns: NMS 적용된 tensor
         """
-        return torch.nn.functional.nms(
+        return nms(
             predictions[:, :4],
             predictions[:, 4] * predictions[:, 5:].max(1)[0],
             PostprocessService.IOU_THRES
@@ -78,7 +76,7 @@ class PostprocessService:
 
         # NMS 수행
         boxes = preds[:, :4]
-        nms_idx = torch.nn.functional.nms(boxes, conf, PostprocessService.IOU_THRES)
+        nms_idx = nms(boxes, conf, PostprocessService.IOU_THRES)
 
         preds = preds[nms_idx]
         class_ids = class_ids[nms_idx]
