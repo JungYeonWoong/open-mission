@@ -6,7 +6,7 @@ from backend.services.video_service import VideoService
 from backend.services.preprocess_service import PreprocessService
 from backend.services.inference_service import InferenceService
 from backend.services.postprocess_service import PostprocessService
-
+from backend.services.fire_detector import FireDetector
 
 class PredictService:
     """
@@ -36,11 +36,11 @@ class PredictService:
 
         # 추론
         start = time.time()
-        raw_output = InferenceService.infer(processed)
+        fire_detector = FireDetector("backend/models/fire.pt")
         end = time.time()
 
         # 후처리 (BBox/Label/Confidence)
-        detections = PostprocessService.convert(raw_output)
+        detections = fire_detector.detect(img_np)
 
         return {
             "filename": file.filename,

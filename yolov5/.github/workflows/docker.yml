@@ -4,9 +4,6 @@
 
 name: Publish Docker Images
 
-permissions:
-  contents: read
-
 on:
   push:
     branches: [master]
@@ -19,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # copy full .git directory to access full git history in Docker images
 
