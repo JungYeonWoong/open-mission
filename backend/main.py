@@ -33,9 +33,9 @@ app.add_middleware(
 # 정적 파일(StaticFiles) 제공 설정
 # ======================================
 app.mount(
-    "/static",
-    StaticFiles(directory="backend/static"),
-    name="static"
+    "/",
+    StaticFiles(directory="frontend", html=True),
+    name="frontend"
 )
 
 # ======================================
@@ -59,7 +59,7 @@ async def startup_event():
 # ======================================
 # Health Check Endpoint
 # ======================================
-@app.get("/")
+@app.get("/health")
 def root():
     return {
         "success": True,
@@ -68,17 +68,6 @@ def root():
         "timestamp": None,
         "data": None
     }
-
-
-# ======================================
-# Frontend index.html 제공
-# ======================================
-@app.get("/app", response_class=HTMLResponse)
-async def serve_frontend():
-    html_path = Path("frontend/index.html")
-    if not html_path.exists():
-        return HTMLResponse("<h1>index.html not found</h1>", status_code=404)
-    return html_path.read_text(encoding="utf-8")
 
 # ======================================
 # Develop 모드 실행
