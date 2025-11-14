@@ -61,12 +61,6 @@ button:hover {
     margin-top: 15px;
 }
 
-#previewImage {
-    max-width: 640px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-}
-
 #canvas {
     position: absolute;
     left: 0;
@@ -87,4 +81,12 @@ button:hover {
     border-radius: 8px;
     white-space: pre-wrap;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+#previewImage {
+    max-width: 640px;
+    display: block;
+    margin-top: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
 }
