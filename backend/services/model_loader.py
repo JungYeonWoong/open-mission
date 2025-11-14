@@ -11,11 +11,9 @@ YOLO_ROOT = ROOT / "yolov5"
 
 # sys.path 최우선 등록
 sys.path.insert(0, str(YOLO_ROOT))
-sys.path.insert(0, str(YOLO_ROOT / "utils"))
+# sys.path.insert(0, str(YOLO_ROOT / "utils"))
 
-from yolov5.models.common import DetectMultiBackend
-
-
+# from yolov5.models.common import DetectMultiBackend
 class ModelLoader:
     """
     YOLO 모델 로딩 + warm-up + 예외 처리 강화 버전.
@@ -24,7 +22,7 @@ class ModelLoader:
     """
 
     _model = None
-    _model_path = (ROOT / "backend" / "models" / "fire_detector.pt").resolve()
+    _model_path = (ROOT / "backend" / "models" / "fire.pt").resolve()
 
     @classmethod
     def load_model(cls):
@@ -41,12 +39,20 @@ class ModelLoader:
             return None
 
         try:
-            # YOLOv5 모델 로딩
-            cls._model = DetectMultiBackend(
-                weights=str(cls._model_path),
-                device="cpu",    # GPU 사용 시 'cuda:0'
-                dnn=False
-            )
+            #  PyTorch로 모델 로딩
+            print(f"[ModelLoader] 모델 로딩 시도 → {cls._model_path}")
+            checkpoint = torch.load(cls._model_path, map_location="cpu")
+
+            # YOLOv5 체크포인트 형태인지 판별
+            if isinstance(checkpoint, dict) and "model" in checkpoint:
+                print("[ModelLoader] YOLOv5 checkpoint 형식 감지 → model 추출")
+                model = checkpoint["model"]
+            else:
+                print("[ModelLoader] 일반 PyTorch 모델 감지")
+                model = checkpoint
+
+            model.eval()
+            cls._model = model
             print("[ModelLoader] 모델 로딩 성공!")
 
         except Exception as e:
@@ -60,7 +66,6 @@ class ModelLoader:
         except Exception as e:
             print(f"[ModelLoader] warm-up 실패: {e}")
 
-
         return cls._model
 
     @classmethod
@@ -69,8 +74,11 @@ class ModelLoader:
         if cls._model is None:
             return
 
-        dummy_input = torch.zeros((1, 3, 640, 640))
-        cls._model(dummy_input)  # warm-up inference
+        dummy = torch.zeros((1, 3, 640, 640))
+        try:
+            cls._model(dummy)
+        except Exception as e:
+            print(f"[ModelLoader] warm-up 오류 (무시됨): {e}")
 
     @classmethod
     def get_model(cls):

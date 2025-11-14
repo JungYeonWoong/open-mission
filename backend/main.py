@@ -6,6 +6,9 @@ from fastapi.staticfiles import StaticFiles
 from backend.api.v1 import router as api_v1_router
 from backend.services.model_loader import ModelLoader
 
+from fastapi.responses import HTMLResponse
+from pathlib import Path
+
 # ======================================
 # FastAPI App 생성
 # ======================================
@@ -65,6 +68,17 @@ def root():
         "timestamp": None,
         "data": None
     }
+
+
+# ======================================
+# Frontend index.html 제공
+# ======================================
+@app.get("/app", response_class=HTMLResponse)
+async def serve_frontend():
+    html_path = Path("frontend/index.html")
+    if not html_path.exists():
+        return HTMLResponse("<h1>index.html not found</h1>", status_code=404)
+    return html_path.read_text(encoding="utf-8")
 
 # ======================================
 # Develop 모드 실행

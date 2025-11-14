@@ -16,7 +16,6 @@ __pycache__/
 runs/
 yolov5/data/
 yolov5/weights/
-*.pt
 *.rbln
 
 # IDE
