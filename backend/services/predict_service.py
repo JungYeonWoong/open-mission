@@ -1,5 +1,6 @@
 import time
 from fastapi import UploadFile
+from pathlib import Path
 
 from backend.services.image_service import ImageService
 from backend.services.video_service import VideoService
@@ -7,6 +8,8 @@ from backend.services.preprocess_service import PreprocessService
 from backend.services.inference_service import InferenceService
 from backend.services.postprocess_service import PostprocessService
 from backend.services.fire_detector import FireDetector
+from backend.services.visualization_service import VisualizationService
+
 
 class PredictService:
     """
@@ -34,20 +37,25 @@ class PredictService:
         # 3) 전처리
         processed = PreprocessService.preprocess_image(img_np)
 
-        # 추론
+        # 4) 추론
         start = time.time()
         fire_detector = FireDetector("backend/models/fire.pt")
+        detections = fire_detector.detect(img_np)
         end = time.time()
 
-        # 후처리 (BBox/Label/Confidence)
-        detections = fire_detector.detect(img_np)
+         # 5) 박스 그리기
+        annotated = VisualizationService.draw_detections(img_np, detections)
+
+        # 6) 이미지 저장
+        saved_path = VisualizationService.save_result_image(annotated, file.filename)
 
         return {
             "filename": file.filename,
             "image_size": img_np.shape,
             "processed_size": processed.shape,
             "inference_time_ms": round((end - start) * 1000, 2),
-            "detections": detections
+            "detections": detections.tolist(),
+            "saved_result_path": saved_path
         }
 
     @staticmethod

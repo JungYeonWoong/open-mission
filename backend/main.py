@@ -24,10 +24,15 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],   # 개발 단계에서는 모든 출처 허용
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ======================================
+# API 라우터 등록
+# ======================================
+app.include_router(api_v1_router, prefix="/api/v1")
 
 # ======================================
 # 정적 파일(StaticFiles) 제공 설정
@@ -37,11 +42,6 @@ app.mount(
     StaticFiles(directory="frontend", html=True),
     name="frontend"
 )
-
-# ======================================
-# API 라우터 등록
-# ======================================
-app.include_router(api_v1_router, prefix="/api/v1")
 
 # ======================================
 # Startup Event — 모델을 서버 시작 시 1회 로드

@@ -12,7 +12,7 @@ class FireDetector:
     - 단일 모델만 사용
     """
 
-    def __init__(self, model_path: str, device: str = "cpu", conf=0.25, iou=0.45):
+    def __init__(self, model_path: str, device: str = "cpu", conf=0.1, iou=0.45):
         self.model_path = str(Path(model_path).resolve())
         self.device = torch.device(device)
 

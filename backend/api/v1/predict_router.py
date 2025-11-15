@@ -6,6 +6,7 @@ router = APIRouter()
 
 
 @router.post("/image")
+@router.post("/image/")
 async def predict_image(file: UploadFile = File(...)):
     """
     이미지 업로드 → PredictService로 전체 추론 파이프라인 처리

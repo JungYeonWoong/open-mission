@@ -125,7 +125,7 @@ async function uploadImage() {
     document.getElementById("resultBox").innerText =
         "🔥 화재 감지 중입니다...";
 
-    const res = await fetch(`${BASE_URL}/predict/image`, {
+    const res = await fetch(`${BASE_URL}/predict/image/`, {
         method: "POST",
         body: formData,
     });
