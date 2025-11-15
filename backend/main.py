@@ -37,11 +37,19 @@ app.include_router(api_v1_router, prefix="/api/v1")
 # ======================================
 # 정적 파일(StaticFiles) 제공 설정
 # ======================================
+
+app.mount(
+    "/static",
+    StaticFiles(directory="backend/static"),
+    name="backend_static"
+)
+
 app.mount(
     "/",
     StaticFiles(directory="frontend", html=True),
     name="frontend"
 )
+
 
 # ======================================
 # Startup Event — 모델을 서버 시작 시 1회 로드

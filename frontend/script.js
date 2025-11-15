@@ -131,15 +131,35 @@ async function uploadImage() {
     });
 
     const json = await res.json();
+
     document.getElementById("resultBox").innerText =
         JSON.stringify(json, null, 2);
 
+    // ================================
+    // 📌 원본 이미지 미리보기 + canvas bbox 그리기
+    // ================================
     const preview = document.getElementById("previewImage");
 
     preview.onload = () => {
         const detections = json.data?.detections || [];
         drawBoundingBoxes(preview, detections);
     };
+
+    // previewImage에 원본 이미지 표시
+    preview.src = URL.createObjectURL(file);
+
+    // ================================
+    // 🔥 추론 결과 이미지(resultImage) 표시
+    // ================================
+    const resultImg = document.getElementById("resultImage");
+    const savedPath = json.data?.saved_result_path;
+
+    if (savedPath) {
+        resultImg.src = savedPath;   // 서버에 저장된 추론 결과 이미지 로드
+    } else {
+        resultImg.src = "";          // 결과 없음 → 이미지 제거
+    }
+
 }
 
 

@@ -89,4 +89,6 @@ class VisualizationService:
         save_path = save_dir / f"result_{filename}"
         cv2.imwrite(str(save_path), img_bgr)
 
-        return str(save_path)
+        web_path = f"/static/results/result_{filename}"
+
+        return web_path

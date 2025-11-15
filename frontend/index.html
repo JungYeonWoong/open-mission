@@ -51,13 +51,34 @@
                 이미지 추론하기
             </button>
         </div>
-
+        
+        <!-- =============================== -->
+        <!-- 📌 원본 + 추론 결과 이미지 나란히 미리보기 -->
+        <!-- =============================== -->
         <div class="section-box preview-box">
-            <h3>📌 이미지 미리보기</h3>
+            <h3>📌 이미지 비교 (원본 vs 추론 결과)</h3>
 
-            <div class="canvas-container">
-                <img id="previewImage" />
-                <canvas id="canvas"></canvas>
+            <div class="image-compare-wrapper">
+
+                <!-- 원본 -->
+                <div class="image-column">
+                    <h4>📷 원본 이미지</h4>
+
+                    <div class="canvas-container">
+                        <img id="previewImage" />
+                        <canvas id="canvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- 추론 결과 -->
+                <div class="image-column">
+                    <h4>🔥 추론 결과 이미지</h4>
+
+                    <div class="canvas-container">
+                        <img id="resultImage" class="result-img" />
+                    </div>
+                </div>
+
             </div>
         </div>
 
