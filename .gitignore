@@ -21,3 +21,6 @@ yolov5/weights/
 # IDE
 .vscode/
 .idea/
+
+# video
+backend/static/temp_videos/

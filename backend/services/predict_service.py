@@ -1,4 +1,5 @@
 import time
+import cv2
 from fastapi import UploadFile
 from pathlib import Path
 
@@ -66,24 +67,50 @@ class PredictService:
         # 2) 비디오 저장
         saved_path = await VideoService.save_video(file)
 
-        # 3) 대표 프레임 추출
-        frame = VideoService.extract_representative_frame(saved_path)
-        
-        # 4) 전처리
-        processed = PreprocessService.preprocess_image(frame)
+        # 3) YOLO (torch.hub 기반) 로더 준비
+        fire_detector = FireDetector("backend/models/fire.pt")
 
-        # 추론
+        # 4) 비디오 읽기
+        cap = cv2.VideoCapture(saved_path)
+        if not cap.isOpened():
+            raise RuntimeError("비디오를 열 수 없습니다.")
+
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        w   = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        h   = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        # 5) 출력 비디오 준비
+        out_path = saved_path.replace(".mp4", "_result.mp4")
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        writer = cv2.VideoWriter(out_path, fourcc, fps, (w, h))
+
         start = time.time()
-        raw_output = InferenceService.infer(processed)
-        end = time.time()
+        frame_count = 0
 
-        detections = PostprocessService.convert(raw_output)
+        # 6) 모든 프레임 반복
+        while True:
+            ok, frame = cap.read()
+            if not ok:
+                break
+
+            # 6-1) YOLO 추론
+            detections = fire_detector.detect(frame)
+
+            # 6-2) 박스 그리기
+            annotated = VisualizationService.draw_detections(frame, detections)
+
+            # 6-3) 비디오에 쓰기
+            writer.write(annotated)
+            frame_count += 1
+
+        cap.release()
+        writer.release()
+        end = time.time()
 
         return {
             "filename": file.filename,
             "saved_path": saved_path,
-            "frame_shape": frame.shape,
-            "processed_size": processed.shape,
-            "inference_time_ms": round((end - start) * 1000, 2),
-            "detections": detections
+            "output_video": out_path,
+            "total_frames": frame_count,
+            "inference_time_ms": round((end - start) * 1000, 2)
         }
