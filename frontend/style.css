@@ -1,3 +1,26 @@
+/* ====================================================
+   🔥 헤더 박스 스타일 (Glass + Fire Glow)
+==================================================== */
+.header-box {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto 40px auto;
+    padding: 30px 25px;
+
+    /* Glass 효과 */
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+
+    /* Fire Glow */
+    border: 1px solid rgba(255, 120, 60, 0.35);
+    border-radius: 18px;
+    box-shadow:
+        0 0 22px rgba(255, 100, 40, 0.35),
+        inset 0 0 14px rgba(255, 110, 50, 0.2);
+    
+    text-align: center;
+}
+
 /* ===========================================
    🔥 GLOBAL FIRE THEME
 =========================================== */
@@ -13,19 +36,31 @@ body {
 header {
     text-align: center;
     margin-bottom: 40px;
+} 
+
+header::after {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    width: 450px;
+    height: 180px;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(255,100,50,0.25), transparent 70%);
+    filter: blur(30px);
+    z-index: -1;
 }
 
 header h1 {
-    font-size: 42px;
+    font-size: 48px;
     margin: 0;
-    text-shadow: 0 0 12px #ff3000, 0 0 25px #ff5500;
+    color: #ffecd9;
+    text-shadow:
+        0 0 10px #ff4800,
+        0 0 20px #ff2600,
+        0 0 40px #ff1200;
 }
 
-header p {
-    font-size: 15px;
-    color: #ffd6c0;
-    margin-top: 10px;
-}
 
 
 /* ===========================================
@@ -265,4 +300,93 @@ input[type="file"] {
 #videoPreview {
     display: block;
     margin: 0 auto;
+}
+
+
+/* ============================
+   🔥 Section Box (카드 내부 세부 박스)
+=============================== */
+.section-box {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 120, 60, 0.25);
+    border-radius: 14px;
+    padding: 20px 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 0 18px rgba(255, 90, 40, 0.15);
+    backdrop-filter: blur(8px);
+    text-align: center;
+}
+
+/* 제목 박스 강조 */
+.title-box {
+    background: rgba(255, 120, 60, 0.15);
+    box-shadow: 0 0 25px rgba(255, 80, 30, 0.35);
+}
+
+/* 업로드 박스 내부 텍스트 */
+.upload-box h3,
+.preview-box h3,
+.result-box h3 {
+    margin-top: 0;
+    margin-bottom: 14px;
+    color: #ffb38a;
+    text-shadow: 0 0 8px #ff6a00;
+}
+
+/* 드롭 영역 */
+.drop-area {
+    margin-top: 15px;
+    padding: 25px;
+    border-radius: 12px;
+    border: 2px dashed rgba(255, 120, 60, 0.45);
+    color: #ffcdb2;
+    text-align: center;
+    transition: .2s;
+}
+
+.drop-area.dragover {
+    border-color: #ff6a00;
+    background: rgba(255, 120, 60, 0.15);
+    box-shadow: 0 0 18px rgba(255, 80, 20, 0.35);
+}
+
+/* JSON 결과 박스 */
+.result-box pre {
+    background: #0d0d0d;
+    padding: 18px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 90, 40, 0.35);
+    box-shadow: inset 0 0 22px rgba(255, 60, 10, 0.35);
+    color: #ffeede;
+    text-align: left;
+}
+
+/* 제목 + 업로드 + 드래그앤드랍을 포함하는 통합 박스 */
+.upload-section-combined {
+    background: rgba(255, 120, 60, 0.12);
+    border: 1px solid rgba(255, 120, 60, 0.35);
+    box-shadow: 0 0 22px rgba(255, 90, 40, 0.25);
+}
+
+.upload-section-combined h2 {
+    margin-top: 0;
+    color: #ffb38a;
+    text-shadow: 0 0 8px #ff6a00;
+}
+
+.upload-section-combined p {
+    color: #ffd7c2;
+    margin-bottom: 15px;
+}
+
+
+p {
+    font-size: 17px;
+    color: #ffd7b5;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    text-shadow:
+        0 0 10px rgba(255, 80, 20, 0.7),
+        0 0 20px rgba(255, 50, 0, 0.6),
+        0 0 35px rgba(255, 20, 0, 0.4);
 }

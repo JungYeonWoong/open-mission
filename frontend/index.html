@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>🔥 Fire Detection System v3.0</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-    <div class="main-wrapper"></div>
-    <header>
+
+    <header class="header-box">
         <h1>🔥 Fire Detection Web</h1>
         <p>YOLO 기반 화재 감지 이미지·비디오 추론 시스템</p>
     </header>
@@ -27,40 +28,48 @@
     </div>
 
     <!-- =============================== -->
-    <!-- 🔥 Image Only Tab -->
+    <!-- 🔥 Image Tab -->
     <!-- =============================== -->
     <div id="img-tab" class="tab-content active card">
 
-        <h2>📸 이미지 업로드</h2>
+        <div class="section-box upload-section-combined">
+            <h2>📸 이미지 추론</h2>
+            <p>화재·연기 감지를 위한 이미지를 업로드하거나 드래그하여 분석할 수 있습니다.</p>
 
-        <label class="upload-btn">
-            이미지 선택
-            <input type="file" id="imageInput" accept="image/*">
-        </label>
-        <span id="imageFileName" class="file-name"></span>
+            <label class="upload-btn">
+                이미지 선택
+                <input type="file" id="imageInput" accept="image/*" />
+            </label>
 
-        <button id="imagePredictBtn" class="upload-btn detect-btn">
-            이미지 추론하기
-        </button>
-        <div id="dropArea" class="drop-area">
-            🔥 파일을 여기에 끌어다 놓으세요
+            <span id="imageFileName" class="file-name"></span>
+
+            <div id="dropArea" class="drop-area">
+                🔥 이미지를 여기에 드래그하세요
+            </div>
+
+            <button id="imagePredictBtn" class="upload-btn detect-btn">
+                이미지 추론하기
+            </button>
         </div>
-        <div class="preview-section">
+
+        <div class="section-box preview-box">
             <h3>📌 이미지 미리보기</h3>
+
             <div class="canvas-container">
                 <img id="previewImage" />
                 <canvas id="canvas"></canvas>
             </div>
         </div>
 
-        <div class="log-section">
+        <div class="section-box result-box">
             <h3>📄 JSON 결과</h3>
             <pre id="resultBox">이미지 분석 결과가 여기에 표시됩니다...</pre>
         </div>
+
     </div>
 
     <!-- =============================== -->
-    <!-- 🔥 Video Tab + Performance Metrics 포함 -->
+    <!-- 🔥 Video Tab -->
     <!-- =============================== -->
     <div id="video-tab" class="tab-content card">
 
@@ -68,8 +77,9 @@
 
         <label class="upload-btn">
             비디오 선택
-            <input type="file" id="videoInput" accept="video/*">
+            <input type="file" id="videoInput" accept="video/*" />
         </label>
+
         <span id="videoFileName" class="file-name"></span>
 
         <div class="video-preview-section">
@@ -86,12 +96,8 @@
             <pre id="videoLogBox">비디오 분석 로그가 여기에 표시됩니다...</pre>
         </div>
 
-        <!-- ======================================= -->
-        <!-- 🔥 Performance Metrics (video-tab 내부로 이동) -->
-        <!-- ======================================= -->
         <div class="metric-card">
             <h2>📈 Performance Metrics</h2>
-
             <h3>🎯 Accuracy Analysis</h3>
             <p>모델 클래스별 성능 분석 (추후 그래프 추가 예정)</p>
 
@@ -109,16 +115,20 @@
 
     <!-- 탭 전환 Script -->
     <script>
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
 
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.target).classList.add('active');
+                document.querySelectorAll(".tab-btn")
+                    .forEach(b => b.classList.remove("active"));
+
+                document.querySelectorAll(".tab-content")
+                    .forEach(c => c.classList.remove("active"));
+
+                btn.classList.add("active");
+                document.getElementById(btn.dataset.target).classList.add("active");
             });
         });
     </script>
-    </div>
+
 </body>
 </html>
