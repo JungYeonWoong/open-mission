@@ -19,11 +19,12 @@
 그래서 이번 미션에서는 단순히 “모델을 실행하는 코드”를 넘어서,
 `내가 직접 학습한 AI 모델을 실제 ‘웹 서비스 형태’로 제공해보고 싶다는 목표를 세웠다.`
 
-사용자가 직접 이미지를 넣으면
+사용자가 직접 이미지를 업로드하면
 → 서버에서 모델이 추론하고
 → 그 결과를 시각적으로 확인할 수 있는 형태의 서비스.
 
-단순 스크립트가 아닌, 완전한 end-to-end AI 추론 서비스를 구현하는 것이 이번 프로젝트의 핵심 동기이자 도전 목표였다.
+단순 스크립트가 아닌, 완전한 end-to-end AI 추론 서비스를 구현하는 것이 
+이번 프로젝트의 핵심 동기이자 도전 목표였다.
 
 ---
 
@@ -48,13 +49,25 @@ Canvas 기반 렌더링을 통해 탐지된 객체를 이미지 위에 시각적
 → (JSON으로 결과 반환) → [프론트엔드 시각화]
 
 ### 🎈 제공 기능
-- 이미지/동영상 파일 업로드
-- YOLOv5 모델을 활용한 객체 탐지(Inference)
-- bounding box + label 시각화
-- 신뢰도 표시
-- 추론 
-- 비동기 기반 FastAPI 서버
-- 최근 추론 결과 저장(이미지·동영상 History 기능)
+
+#### 1️⃣ 이미지 추론 (Image Inference)
+- 이미지 업로드 방법 1 : 이미지 선택 버튼 클릭 후 파일 선택
+- 이미지 업로드 방법 2 : 이미지 파일 Drag & Drop 업로드 지원
+- 이미지 추론하기 버튼 : 업로드된 이미지에 대해 화재 감지 추론 시작
+- 결과 시각화 : 원본 이미지와 추론 결과 이미지 표시
+- JSON 추론 결과 제공 : 탐지된 객체 정보(좌표, 라벨, 신뢰도)를 JSON 형태로 출력
+- 추론된 이미지 로컬에 저장
+
+#### 2️⃣ 비디오 추론 (Video Inference)
+- 비디오 선택 버튼 : 비디오 파일 업로드
+- 업로드시 비디오 미리보기 제공
+🛠 웹 브라우저 특성상 H.264 코덱 영상만 미리보기 가능
+- 화재 탐지 시작하기 버튼 : 비디오 기반 화재 감지 추론 시작
+🛠 비디오 길이에 따라 처리 시간이 다소 소요될 수 있음
+- 추론 결과 비디오 미리보기 제공 : 객체 탐지 결과가 반영된 영상 확인 가능
+- 비디오 분석 로그(JSON) 제공 : 프레임 단위 감지 결과 및 메타데이터 출력
+- 클래스별 감지 빈도 보기 : 버튼 클릭 시 클래스별 감지 빈도를 그래프로 시각화
+- 추론된 비디오 로컬에 저장
 
 ### 💡 FastAPI를 선택한 이유
 
@@ -63,15 +76,13 @@ Canvas 기반 렌더링을 통해 탐지된 객체를 이미지 위에 시각적
 
 이 목표에서 FastAPI는 다음과 같은 강점이 있다고 판단하였다:
 
-1) AI·딥러닝 생태계와의 완벽한 궁합
+1) AI·딥러닝 생태계와의 높은 호환성
 
 FastAPI는 Python 기반이므로
 - PyTorch
 - OpenCV
 - Numpy
-- YOLO inference 코드
-와 자연스럽게 엮인다.
-모델 로딩, 전처리, 후처리 등을 별도의 변환 작업 없이 바로 구현할 수 있다.
+- YOLO inference 코드와 자연스럽게 연결된다.
 
 반면 Java(Spring)으로 구현할 경우:
 - 모델을 ONNX로 변환해야 하고
@@ -79,10 +90,11 @@ FastAPI는 Python 기반이므로
 - Custom 후처리(CNN output 직접 파싱)
 - Java와 딥러닝 생태계 간 간극 해소
 
-같은 ‘기술적 부수 작업’이 훨씬 많아진다.
-이것은 프로젝트의 초점을 “AI 서비스 구축”에서 “자바 생태계에 모델을 우겨 넣기”로 흐트러뜨린다.
+와 같은 ‘부수적인 작업’이 훨씬 많아진다.
+이는 프로젝트의 초점을 “AI 서비스 구축”이 아닌  
+“모델을 억지로 다른 생태계에 맞추는 작업”으로 흐리게 만든다고 판단했다.
 
-2) 파일 업로드, JSON 응답, 비동기 처리 등 웹 서비스 구축에 최적화
+2) 웹 서비스 구축에 최적화된 기능 제공
 
 FastAPI는
 - 파일 업로드 처리
@@ -94,10 +106,10 @@ FastAPI는
 따라서 AI inference API 구조를 설계하기 쉬워,
 모델 추론 로직에 집중할 수 있다.
 
-3) AI 모델 서빙 표준으로 자리 잡은 기술
+3) 실제 ML 모델 서빙에 널리 사용되는 기술
 
-FastAPI는 속도, 단순함, 문서화 자동화 덕분에
-많은 기업에서 실제로 ML 모델 서빙용 프레임워크로 쓰인다.
+FastAPI는 속도, 단순함, 자동 문서화(Swagger) 덕분에  
+실제 기업 환경에서도 ML 모델 서빙 프레임워크로 널리 사용되고 있다.
 
 `즉, FastAPI는 “AI 모델을 서비스로 만든다”는 이번 프로젝트의 목적에 가장 적합한 기술 스택이었다.`
 
@@ -109,24 +121,150 @@ FastAPI는 속도, 단순함, 문서화 자동화 덕분에
 - FastAPI
 - Uvicorn
 - Python
-- YOLOv5 (PyTorch)
+- PyTorch
+- YOLOv5
 - OpenCV
 - Numpy
 
 ### Frontend
 - HTML5
 - Vanilla JavaScript
+- Canvas API
 
 ### Infra / Architecture
 - REST API 기반 구조
 - 이미지/영상 파일 처리
 - 모델 메모리 상주 로딩(Warm-up)
 - 비동기 기반 FastAPI 서버
-- 모듈 기반 설계 (Router/Service/Utils)
+- 모듈 분리 구조 (Router/Service/Utils)
 
 ---
 
-## 📌 4. 2주 프로젝트 계획 (기능 단위 Commit 기반)
+## 📌 4. 실행 환경 및 설치 방법
+
+### ✔️ 실행 환경
+- Python 3.10
+- OS: Windows
+- CPU 환경
+본 프로젝트는 GPU 없이 CPU 환경에서도 정상 동작하도록 구현되었습니다.
+
+### ✔️ 의존성 설치
+
+`pip install -r requirements.txt`
+
+### ✔️ 서버 실행
+
+`uvicorn backend.main:app`
+
+---
+
+## 📌 5. 프로젝트 폴더 구조
+
+일부 서비스 파일은 향후 커스텀 추론 파이프라인 및
+멀티 모델 서빙 확장을 고려하여 설계 단계에서 함께 구성되었다.
+
+```
+OPEN-MISSION/
+├─ backend/
+│  ├─ main.py
+│  │   └─ FastAPI 애플리케이션 엔트리 포인트
+│
+│  ├─ api/
+│  │  └─ v1/
+│  │     ├─ predict_router.py
+│  │     │   └─ 이미지 / 비디오 추론 API 엔드포인트
+│  │     ├─ recent_router.py
+│  │     │   └─ (확장용) 최근 추론 결과 조회 API
+│  │     └─ __init__.py
+│
+│  ├─ models/
+│  │  ├─ fire.pt
+│  │  │   └─ 커스텀 학습 YOLOv5 화재 감지 모델
+│  │  └─ .gitkeep
+│
+│  ├─ services/
+│  │  ├─ fire_detector.py
+│  │  │   └─ torch.hub 기반 YOLOv5 모델 로딩 및 추론 (현재 핵심)
+│  │
+│  │  ├─ image_service.py
+│  │  │   └─ 이미지 UploadFile → NumPy(BGR) 변환
+│  │
+│  │  ├─ video_service.py
+│  │  │   └─ 비디오 저장 및 대표 프레임 추출
+│  │
+│  │  ├─ predict_service.py
+│  │  │   └─ 이미지 / 비디오 전체 추론 파이프라인 관리
+│  │
+│  │  ├─ preprocess_service.py
+│  │  │   └─ YOLO 입력 전처리 (Resize, Normalize 등)
+│  │
+│  │  ├─ result_storage_service.py
+│  │  │   └─ 원본 / 결과 이미지 및 메타데이터 저장
+│  │
+│  │  ├─ inference_service.py
+│  │  │   └─ 🧩 (확장용) Tensor 기반 범용 추론 로직
+│  │
+│  │  ├─ postprocess_service.py
+│  │  │   └─ 🧩 (확장용) NMS, Confidence 필터링, 라벨 매핑
+│  │
+│  │  ├─ visualization_service.py
+│  │  │   └─ 🧩 (확장용) 서버 측 Bounding Box 렌더링
+│  │
+│  │  ├─ model_loader.py
+│  │  │   └─ 🧩 (확장용) 모델 싱글톤 로딩 및 Warm-up 관리
+│  │
+│  │  └─ __init__.py
+│
+│  ├─ static/
+│  │  ├─ results/
+│  │  │   └─ 추론 결과 이미지 / 메타데이터 저장 디렉토리
+│  │  └─ temp_videos/
+│  │      └─ 업로드된 비디오 임시 저장 디렉토리
+│
+│  ├─ utils/
+│  │  ├─ response.py
+│  │  │   └─ API 공통 응답 포맷 정의
+│  │  └─ __init__.py
+│
+│  └─ tests/
+│     ├─ sample/
+│     ├─ test_image_service.py
+│     ├─ test_inference.py
+│     ├─ test_model_loading.py
+│     ├─ test_postprocess.py
+│     ├─ test_predict_real_image.py
+│     ├─ test_predict_service.py
+│     └─ test_preprocess.py
+│
+├─ frontend/
+│  ├─ index.html
+│  │   └─ 이미지 / 비디오 업로드 UI
+│  │
+│  ├─ script.js
+│  │   └─ 파일 업로드 및 API 요청 로직
+│  │
+│  ├─ render.js
+│  │   └─ Canvas 기반 Bounding Box 시각화
+│  │
+│  ├─ chart.js
+│  │   └─ 클래스별 감지 빈도 그래프 시각화
+│  │
+│  └─ style.css
+│      └─ 웹 UI 스타일 정의
+│
+├─ yolov5/
+│  └─ YOLOv5 원본 레포지토리 (torch.hub / 커스텀 확장용)
+│
+├─ requirements.txt
+│
+├─ README.md
+│
+└─ .gitignore
+```
+
+---
+
+## 📌 6. 2주 프로젝트 계획 (기능 단위 Commit 기반)
 
 아래 계획은 FastAPI 기반 YOLO 추론 웹 서비스를 2주 동안 단계별로 구축하기 위한 개발 흐름을 정리한 것이다.
 각 단계는 구현해야 할 기능과 관련된 commit 단위로 구성되어 있어, 명확하고 일관성 있게 개발을 진행할 수 있다.
@@ -184,7 +322,6 @@ API 결과를 확인할 수 있는 기본 UI를 구성한다.
     - 기본 스타일(CSS) 적용하여 사용자 경험 개선
 
 
-
 6️⃣ Canvas 기반 Bounding Box 시각화 
 
 YOLO 추론 결과를 직관적으로 확인할 수 있도록 Canvas 기반 시각화 기능을 구현한다.
@@ -227,27 +364,4 @@ YOLO 추론 결과를 직관적으로 확인할 수 있도록 Canvas 기반 시�
 - [docs] README 최종 작성 (개요·구조·학습 내용·실행 방법)
 - [docs] 아키텍처/흐름도 다이어그램 추가
 
-
-## 📌 5. 초기 폴더 구조
-
-yolo-web/
-├── backend/
-│   ├── api/
-│   │   └── v1/
-│   │       └── __init__.py
-│   ├── services/
-│   │   └── __init__.py
-│   ├── utils/
-│   │   └── __init__.py
-│   ├── models/
-│   │   └── .gitkeep
-│   ├── static/
-│   │   └── results/
-│   │       └── .gitkeep
-│   └── __init__.py
-├── frontend/
-│   ├── index.html
-│   ├── script.js
-│   └── style.css
-└── .gitignore
 
