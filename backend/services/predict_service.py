@@ -6,8 +6,8 @@ from pathlib import Path
 from backend.services.image_service import ImageService
 from backend.services.video_service import VideoService
 from backend.services.preprocess_service import PreprocessService
-from backend.services.inference_service import InferenceService
-from backend.services.postprocess_service import PostprocessService
+# from backend.services.inference_service import InferenceService
+# from backend.services.postprocess_service import PostprocessService
 from backend.services.fire_detector import FireDetector
 from backend.services.visualization_service import VisualizationService
 

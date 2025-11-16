@@ -1,3 +1,13 @@
+"""
+[UNUSED SERVICE]
+
+현재 프로젝트 구조에서는 사용하지 않는 서비스입니다.
+과거 구조 후처리 모듈을 위해 만들어졌으나,
+FireDetector 및 PredictService 중심 구조로 통합되면서 미사용 상태입니다.
+
+향후 구조 확장시 다시 활성화할 수 있습니다.
+"""
+
 import torch
 import numpy as np
 from torchvision.ops import nms
