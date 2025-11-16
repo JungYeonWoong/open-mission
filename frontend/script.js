@@ -1,9 +1,13 @@
 // 🚨 import는 반드시 최상단!
 import { drawBoundingBoxes } from "./render.js";
+import { renderFrequencyChart } from "./chart.js";
 
 console.log("SCRIPT START");
 
 const BASE_URL = "http://localhost:8000/api/v1";
+
+// 마지막 비디오 추론 결과의 detection frequency 저장
+let lastDetectionFrequency = null;
 
 window.addEventListener("DOMContentLoaded", () => {
     console.log("DOM READY!");
@@ -16,7 +20,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const imagePredictBtn = document.getElementById("imagePredictBtn");
     const dropArea = document.getElementById("dropArea");
 
-    // 🔥 공용 함수: 이미지 파일을 불러왔을 때 처리하는 모든 로직
+    // 공용 함수: 이미지 파일을 불러왔을 때 처리하는 모든 로직
     function handleImageFile(file) {
         if (!file) return;
 
@@ -31,9 +35,7 @@ window.addEventListener("DOMContentLoaded", () => {
             const canvas = document.getElementById("canvas");
             canvas.width = preview.width;
             canvas.height = preview.height;
-
-            const ctx = canvas.getContext("2d");
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
 
             document.getElementById("resultBox").innerText =
                 "이미지를 선택했습니다. 추론을 실행하세요.";
@@ -89,6 +91,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const videoPreview = document.getElementById("videoPreview");
     const videoPredictBtn = document.getElementById("videoPredictBtn");
     const videoLogBox = document.getElementById("videoLogBox");
+    const showFreqChartBtn = document.getElementById("showFreqChartBtn");
 
     // 📁 비디오 input 선택 시
     videoInput?.addEventListener("change", () => {
@@ -108,6 +111,15 @@ window.addEventListener("DOMContentLoaded", () => {
     });
 
     videoPredictBtn?.addEventListener("click", uploadVideo);
+
+    showFreqChartBtn?.addEventListener("click", () => {
+        if (!lastDetectionFrequency) {
+            alert("먼저 비디오 추론을 실행해주세요.");
+            return;
+        }
+
+        renderFrequencyChart(lastDetectionFrequency);
+    });
 });
 
 
@@ -194,8 +206,18 @@ async function uploadVideo() {
         });
 
         const json = await res.json();
-
         videoLogBox.textContent = JSON.stringify(json, null, 2);
+
+        // ==============================
+        // 📊 Detection Frequency 저장 + 버튼 활성화
+        // ==============================
+        const freqData = json.data?.detection_frequency;
+        console.log("freqData =", freqData);
+
+        if (freqData) {
+            lastDetectionFrequency = freqData;
+            showFreqChartBtn.disabled = false; // 버튼 활성화
+        }
 
         // ==============================
         // ⭐ 추론 결과 비디오 표시

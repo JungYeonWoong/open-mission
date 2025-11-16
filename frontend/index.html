@@ -107,6 +107,9 @@
 
         <span id="videoFileName" class="file-name"></span>
 
+        <!-- =============================== -->
+        <!-- 🎞 비디오 미리보기 -->
+        <!-- =============================== -->
         <div class="video-preview-section">
             <h3>🎞 비디오 미리보기</h3>
             <video id="videoPreview" controls width="640" preload="metadata"></video>
@@ -116,23 +119,47 @@
             🔥 화재 탐지 시작하기
         </button>
 
+        <!-- =============================== -->
+        <!-- 🔥 추론 결과 비디오 -->
+        <!-- =============================== -->
         <div class="video-result-section">
             <h3>🔥 추론 결과 비디오</h3>
             <video id="videoResult" controls width="640" preload="metadata"></video>
         </div>
 
+        <!-- =============================== -->
+        <!-- 📄 분석 로그 -->
+        <!-- =============================== -->
         <div class="log-section">
             <h3>📄 비디오 분석 로그</h3>
             <pre id="videoLogBox">비디오 분석 로그가 여기에 표시됩니다...</pre>
         </div>
 
+        <!-- =============================== -->
+        <!-- 📊 Performance Metrics -->
+        <!-- =============================== -->
         <div class="metric-card">
             <h2>📈 Performance Metrics</h2>
-            <h3>🎯 Accuracy Analysis</h3>
-            <p>모델 클래스별 성능 분석 (추후 그래프 추가 예정)</p>
 
+            <h3>🎯 Detection Frequency (클래스별 감지 빈도)</h3>
+            <!-- =============================== -->
+            <!-- 📊 Detection Frequency Trigger -->
+            <!-- =============================== -->
+            <div class="section-box" style="text-align:center; margin-top: 20px;">
+                <button
+                    id="showFreqChartBtn"
+                    class="upload-btn"
+                >
+                    📊 클래스별 감지 빈도 보기
+                </button>
+            </div>
+
+            
+            <p>화재 및 연기 클래스별 감지된 프레임 수(비디오 전체 기준)</p>
+
+            <!-- ⭐ 실제 그래프가 들어갈 canvas -->
             <div class="metric-placeholder">
-                Accuracy Chart Placeholder
+                <canvas id="freqChart" width="600" height="300"></canvas>
             </div>
         </div>
 
@@ -193,6 +220,7 @@
     <!-- =============================== -->
     <!-- 🔥 Scripts -->
     <!-- =============================== -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" src="script.js"></script>
 
     <!-- 탭 전환 Script -->

@@ -391,3 +391,8 @@ p {
         0 0 35px rgba(255, 20, 0, 0.4);
 }
 
+.metric-placeholder {
+    display: flex;
+    justify-content: center;   /* 좌우 중앙 */
+    align-items: center;       /* 상하 중앙 (선택) */
+}

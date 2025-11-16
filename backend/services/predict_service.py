@@ -40,6 +40,7 @@ class PredictService:
         img_np = await ImageService.file_to_numpy(file)
         processed = PreprocessService.preprocess_image(img_np)
 
+        # 추론
         start = time.time()
         detections = PredictService.fire_detector.detect(img_np)
         inference_ms = round((time.time() - start) * 1000, 2)
@@ -63,7 +64,10 @@ class PredictService:
     async def process_video(file: UploadFile):
         PredictService.validate_extension(file, PredictService.VIDEO_EXT)
 
+        # 1) 비디오 저장
         saved_path = await VideoService.save_video(file)
+
+        # 2) 비디오 열기
         cap = cv2.VideoCapture(saved_path)
         if not cap.isOpened():
             raise RuntimeError("비디오를 열 수 없습니다.")
@@ -72,17 +76,19 @@ class PredictService:
         w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
+        # 3) 출력 비디오 준비
         out_path = saved_path.replace(".mp4", "_result.mp4")
         writer = PredictService._init_writer(out_path, fps, w, h)
 
+        # 4) 프레임 처리 + 클래스 감지 카운트
         start = time.time()
-        frame_count = PredictService._process_frames(cap, writer)
+        frame_count, class_counts = PredictService._process_frames(cap, writer)
         inference_ms = round((time.time() - start) * 1000, 2)
 
         cap.release()
         writer.release()
-        video_filename = Path(out_path).name
-        web_video_path = f"/static/temp_videos/{video_filename}"
+
+        web_video_path = f"/static/temp_videos/{Path(out_path).name}"
 
         return {
             "filename": file.filename,
@@ -90,14 +96,14 @@ class PredictService:
             "output_video": web_video_path,
             "total_frames": frame_count,
             "inference_time_ms": inference_ms,
+            "detection_frequency": class_counts     # ⭐ 클래스별 감지 빈도 추가
         }
 
     # ================================
-    # 🔹 비디오 보조 함수들 (적당히 분리)
+    # 🔹 H.264/mp4v VideoWriter 생성
     # ================================
     @staticmethod
     def _init_writer(out_path, fps, w, h):
-        """브라우저 호환성 높은 H.264 우선 생성"""
         fourcc = cv2.VideoWriter_fourcc(*"avc1")
         writer = cv2.VideoWriter(out_path, fourcc, fps, (w, h))
 
@@ -111,10 +117,15 @@ class PredictService:
 
         return writer
 
+    # ================================
+    # 🔥 프레임 처리 + Detection Frequency 계산
+    # ================================
     @staticmethod
     def _process_frames(cap, writer):
-        """프레임 반복 처리 및 박스 시각화"""
         frame_count = 0
+
+        # 클래스별 감지 횟수 저장용
+        class_counts = {0: 0, 1: 0, 2: 0, 3: 0}
 
         while True:
             ok, frame = cap.read()
@@ -122,8 +133,16 @@ class PredictService:
                 break
 
             detections = PredictService.fire_detector.detect(frame)
+
+            # 클래스 카운팅
+            for det in detections:
+                cls = int(det[5])  # YOLO detection format: [x1, y1, x2, y2, conf, cls]
+                if cls in class_counts:
+                    class_counts[cls] += 1
+
             annotated = VisualizationService.draw_detections(frame, detections)
             writer.write(annotated)
+
             frame_count += 1
 
-        return frame_count
+        return frame_count, class_counts
