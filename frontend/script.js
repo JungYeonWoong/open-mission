@@ -98,7 +98,11 @@ window.addEventListener("DOMContentLoaded", () => {
         videoFileName.textContent = file.name;
 
         videoPreview.src = URL.createObjectURL(file);
-        videoPreview.load();
+        // videoPreview.load();
+        videoPreview.onloadedmetadata = () => {
+            console.log("Video metadata loaded");
+            videoPreview.play();
+        };
 
         videoLogBox.textContent = "비디오가 선택되었습니다. 추론을 실행하세요.";
     });
@@ -169,6 +173,8 @@ async function uploadImage() {
 async function uploadVideo() {
     const fileInput = document.getElementById("videoInput");
     const videoLogBox = document.getElementById("videoLogBox");
+    const videoPreview = document.getElementById("videoPreview");
+    const videoResult = document.getElementById("videoResult");
 
     if (fileInput.files.length === 0) {
         alert("비디오를 선택해주세요!");
@@ -188,9 +194,27 @@ async function uploadVideo() {
         });
 
         const json = await res.json();
+
         videoLogBox.textContent = JSON.stringify(json, null, 2);
+
+        // ==============================
+        // ⭐ 추론 결과 비디오 표시
+        // ==============================
+        const resultVideoPath = json.data?.output_video;
+        console.log("output_video =", resultVideoPath);
+
+
+        if (resultVideoPath) {
+            // 서버가 “/static/...mp4” 형태 반환하는 경우 그대로 넣으면 됨
+            videoResult.src = resultVideoPath;
+            videoResult.load();
+            videoResult.play();
+        } else {
+            videoResult.src = "";
+        }
 
     } catch (err) {
         videoLogBox.textContent = "❌ 비디오 추론 중 오류 발생: " + err;
+        videoResult.src = "";
     }
 }

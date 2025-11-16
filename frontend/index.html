@@ -25,6 +25,10 @@
         <button class="tab-btn" data-target="video-tab">
             <i class="fas fa-video"></i> 비디오 분석
         </button>
+
+        <button class="tab-btn" data-target="history-tab">
+            <i class="fas fa-hisory"></i> 추론 히스토리
+        </button>
     </div>
 
     <!-- =============================== -->
@@ -105,12 +109,17 @@
 
         <div class="video-preview-section">
             <h3>🎞 비디오 미리보기</h3>
-            <video id="videoPreview" controls width="640"></video>
+            <video id="videoPreview" controls width="640" preload="metadata"></video>
         </div>
 
         <button id="videoPredictBtn" class="upload-btn detect-btn">
             🔥 화재 탐지 시작하기
         </button>
+
+        <div class="video-result-section">
+            <h3>🔥 추론 결과 비디오</h3>
+            <video id="videoResult" controls width="640" preload="metadata"></video>
+        </div>
 
         <div class="log-section">
             <h3>📄 비디오 분석 로그</h3>
@@ -128,6 +137,58 @@
         </div>
 
     </div>
+
+
+    <!-- =============================== -->
+    <!-- 🔥 History Tab (New) -->
+    <!-- =============================== -->
+    <div id="history-tab" class="tab-content card">
+
+        <h2>🕒 최근 추론 히스토리</h2>
+        <p>최근 실행된 이미지·비디오 추론 결과를 확인할 수 있습니다.</p>
+
+        <!-- 히스토리 리스트 -->
+        <div id="historyList" class="section-box">
+            <h3>📄 추론 결과 목록</h3>
+
+            <div class="history-table">
+                <!-- JS가 아래와 같은 row를 자동으로 추가 -->
+                <!--
+                <div class="history-row">
+                    <img class="history-thumb" src="/static/results/xxx_result.png" />
+                    <div class="history-info">
+                        <div class="history-title">test.png</div>
+                        <div class="history-meta">
+                            · 2025-01-21 10:20  
+                            · 감지: 2개  
+                            · 45ms
+                        </div>
+                    </div>
+                    <button class="history-detail-btn" data-id="xxxx">상세보기</button>
+                </div>
+                -->
+            </div>
+        </div>
+
+        <!-- 상세 조회 영역 -->
+        <div id="historyDetail" class="section-box" style="display:none;">
+            <h3>🔍 상세 결과</h3>
+
+            <div class="detail-content">
+                <img id="detailResultImage" class="detail-img" />
+
+                <div class="detail-meta">
+                    <p><b>파일명:</b> <span id="detailFilename"></span></p>
+                    <p><b>추론 시간:</b> <span id="detailInference"></span></p>
+                    <p><b>감지된 객체 수:</b> <span id="detailDetections"></span></p>
+                    <p><b>추론 ID:</b> <span id="detailId"></span></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
 
     <!-- =============================== -->
     <!-- 🔥 Scripts -->
