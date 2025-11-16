@@ -48,7 +48,7 @@ class PredictService:
         annotated = VisualizationService.draw_detections(img_np, detections)
 
         # 6) 이미지 저장
-        saved_path = VisualizationService.save_result_image(annotated, file.filename)
+        saved_path = ImageService.save_result_image(annotated, file.filename)
 
         return {
             "filename": file.filename,

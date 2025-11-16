@@ -3,7 +3,7 @@ import cv2
 from fastapi import UploadFile
 from PIL import Image
 from io import BytesIO
-
+from pathlib import Path
 
 class ImageService:
     """
@@ -33,3 +33,18 @@ class ImageService:
         img_np = cv2.cvtColor(img_np, cv2.COLOR_RGB2BGR)
 
         return img_np
+    
+    @staticmethod
+    def save_result_image(img_bgr: np.ndarray, filename: str):
+        """
+        추론 결과 이미지를 backend/static/results/ 에 저장함.
+        """
+        save_dir = Path("backend/static/results")
+        save_dir.mkdir(parents=True, exist_ok=True)
+
+        save_path = save_dir / f"result_{filename}"
+        cv2.imwrite(str(save_path), img_bgr)
+
+        web_path = f"/static/results/result_{filename}"
+
+        return web_path
